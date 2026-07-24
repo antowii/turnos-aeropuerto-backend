@@ -35,20 +35,24 @@ public class TrabajadorService {
         return true;
     }
 
-    //Metodo 3: Validar la rotacion de sectores
-    public boolean cumpleRotacion(Trabajador trabajador, Tienda tiendaNueva) {
-        String terminalAnterior = trabajador.getUltimoTerminalTrabajado();
-        String terminalNuevo = tiendaNueva.getTerminal();
-
-        //Si es nuevo puede trabajar en cualquiera
-        if (terminalAnterior == null) {
+    //Metodo 3A: Validar rotacion SOLO con el nombre del terminal (Ideal para el Encargado)
+    public boolean cumpleRotacion(Trabajador trabajador, String terminalNuevo) {
+        // EXCEPCION: Joyera y Supervisor no rotan de terminal. (El Encargado SI rota, así que no está aquí)
+        String cargo = trabajador.getCargo();
+        if (cargo != null && (cargo.equalsIgnoreCase("Joyera") || cargo.equalsIgnoreCase("Supervisor"))) {
             return true;
         }
 
-        if (terminalAnterior.equalsIgnoreCase(terminalNuevo)) {
-            return false; //No rotó, le toca el mismo
+        String terminalAnterior = trabajador.getUltimoTerminalTrabajado();
+        if (terminalAnterior == null) {
+            return true;
         }
-        return true; // Si rotó
+        return !terminalAnterior.equalsIgnoreCase(terminalNuevo);
+    }
+
+    //Metodo 3B: Validar rotacion cuando sí tenemos una Tienda (Vendedores normales)
+    public boolean cumpleRotacion(Trabajador trabajador, Tienda tiendaNueva) {
+        return cumpleRotacion(trabajador, tiendaNueva.getTerminal());
     }
 
     //Metodo 4: Validar si está disponible (no tiene ausencias hoy)
@@ -57,6 +61,34 @@ public class TrabajadorService {
 
         if (tieneAusencia) {
             return false;
+        }
+        return true;
+    }
+
+    //Metodo 5: Guardar un nuevo trabajador en la base de datos
+    public Trabajador guardar(Trabajador trabajador) {
+        return trabajadorRepository.save(trabajador);
+    }
+
+    //Metodo 6: Buscar a un trabajador por su ID
+    public Trabajador obtenerPorId(Long id) {
+        // findById busca por número. orElse(null) significa: si no lo encuentras, devuelve un vacío.
+        return trabajadorRepository.findById(id).orElse(null);
+    }
+
+    //Metodo 7: Validar si la tienda es permitida segun el rol del trabajador (Joyeras)
+    public boolean esTiendaValidaParaRol(Trabajador trabajador, Tienda tienda) {
+        String cargo = trabajador.getCargo();
+        String nombreTienda = tienda.getNombre();
+
+        if (cargo == null) {
+            return true;
+        }
+
+        if (cargo.equalsIgnoreCase("Joyera")) {
+            return nombreTienda.equalsIgnoreCase("Manquehue") ||
+                    nombreTienda.equalsIgnoreCase("Joyería") ||
+                    nombreTienda.equalsIgnoreCase("Emprende");
         }
         return true;
     }

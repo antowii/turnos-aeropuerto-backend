@@ -15,6 +15,7 @@ public class Tienda {
 
     private String nombre;
     private String terminal;
-    private int capacidad;
     private boolean requiereTica;
+    private int capacidadMinima;
+    private int capacidadMaxima;
 }
