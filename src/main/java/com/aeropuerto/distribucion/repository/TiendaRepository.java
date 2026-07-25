@@ -1,6 +1,6 @@
-package com.aeropuerto.turnos.repository;
+package com.aeropuerto.distribucion.repository;
 
-import com.aeropuerto.turnos.model.Tienda;
+import com.aeropuerto.distribucion.model.Tienda;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

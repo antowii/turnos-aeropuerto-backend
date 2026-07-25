@@ -1,4 +1,4 @@
-package com.aeropuerto.turnos.model;
+package com.aeropuerto.distribucion.model;
 
 import jakarta.persistence.*;
 import lombok.Data;

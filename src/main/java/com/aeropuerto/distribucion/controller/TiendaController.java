@@ -1,7 +1,7 @@
-package com.aeropuerto.turnos.controller;
+package com.aeropuerto.distribucion.controller;
 
-import com.aeropuerto.turnos.model.Tienda;
-import com.aeropuerto.turnos.service.TiendaService;
+import com.aeropuerto.distribucion.model.Tienda;
+import com.aeropuerto.distribucion.service.TiendaService;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;

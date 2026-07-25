@@ -1,9 +1,9 @@
-package com.aeropuerto.turnos.service;
+package com.aeropuerto.distribucion.service;
 
-import com.aeropuerto.turnos.model.Tienda;
-import com.aeropuerto.turnos.model.Trabajador;
-import com.aeropuerto.turnos.repository.AsistenciaRepository;
-import com.aeropuerto.turnos.repository.TrabajadorRepository;
+import com.aeropuerto.distribucion.model.Tienda;
+import com.aeropuerto.distribucion.model.Trabajador;
+import com.aeropuerto.distribucion.repository.AsistenciaRepository;
+import com.aeropuerto.distribucion.repository.TrabajadorRepository;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;

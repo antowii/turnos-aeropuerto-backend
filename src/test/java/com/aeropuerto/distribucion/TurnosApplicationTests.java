@@ -1,4 +1,4 @@
-package com.aeropuerto.turnos;
+package com.aeropuerto.distribucion;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;

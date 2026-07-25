@@ -1,7 +1,7 @@
-package com.aeropuerto.turnos.controller;
+package com.aeropuerto.distribucion.controller;
 
-import com.aeropuerto.turnos.model.Trabajador;
-import com.aeropuerto.turnos.service.TrabajadorService;
+import com.aeropuerto.distribucion.model.Trabajador;
+import com.aeropuerto.distribucion.service.TrabajadorService;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;

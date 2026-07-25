@@ -1,7 +1,7 @@
-package com.aeropuerto.turnos.service;
+package com.aeropuerto.distribucion.service;
 
-import com.aeropuerto.turnos.model.Tienda;
-import com.aeropuerto.turnos.repository.TiendaRepository;
+import com.aeropuerto.distribucion.model.Tienda;
+import com.aeropuerto.distribucion.repository.TiendaRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.List;

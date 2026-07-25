@@ -1,9 +1,10 @@
-package com.aeropuerto.turnos.controller;
+package com.aeropuerto.distribucion.controller;
 
-import com.aeropuerto.turnos.model.Tienda;
-import com.aeropuerto.turnos.model.Trabajador;
-import com.aeropuerto.turnos.service.TiendaService;
-import com.aeropuerto.turnos.service.TrabajadorService;
+import com.aeropuerto.distribucion.model.Tienda;
+import com.aeropuerto.distribucion.model.Trabajador;
+import com.aeropuerto.distribucion.service.DistribucionService;
+import com.aeropuerto.distribucion.service.TiendaService;
+import com.aeropuerto.distribucion.service.TrabajadorService;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -12,21 +13,25 @@ import org.springframework.web.bind.annotation.RestController;
 import java.time.LocalDate;
 
 @RestController
-@RequestMapping("/api/turnos")
-public class TurnoController {
+@RequestMapping("/api/distribuciones")
+public class DistribucionController {
     private final TrabajadorService trabajadorService;
     private final TiendaService tiendaService;
+    private final DistribucionService distribucionService;
 
-    public TurnoController(TrabajadorService trabajadorService, TiendaService tiendaService) {
+    public DistribucionController(TrabajadorService trabajadorService, TiendaService tiendaService, DistribucionService distribucionService) {
         this.trabajadorService = trabajadorService;
         this.tiendaService = tiendaService;
+        this.distribucionService= distribucionService;
     }
 
     @GetMapping("/evaluar")
-    public String evaluarTurno(
+    public String evaluarDistribucion(
             @RequestParam Long idTrabajador,
             @RequestParam(required = false) Long idTienda,
             @RequestParam(required = false) String terminalDestino) {
+        LocalDate hoy = LocalDate.now();
+
         Trabajador trabajador = trabajadorService.obtenerPorId(idTrabajador);
         if (trabajador == null) {
             return "ERROR: Trabajador no encontrado.";
@@ -55,6 +60,12 @@ public class TurnoController {
             if (!trabajadorService.cumpleRotacion(trabajador, terminalDestino)) {
                 return "RECHAZADO: El Encargado no puede repetir el terminal " + terminalDestino;
             }
+            if (distribucionService.terminalYaTieneEncargado(terminalDestino, hoy)) {
+                return "RECHAZADO: Ya hay un Encargado cubriendo el terminal " + terminalDestino;
+            }
+            // ¡Guardamos al Encargado! (Le pasamos 'null' en la tienda, pero sí le pasamos el terminalDestino)
+            distribucionService.registrarDistribucion(trabajador, null, terminalDestino, hoy);
+
             return "APROBADO: El Encargado se asignó al terminal " + terminalDestino;
         }
 
@@ -82,6 +93,13 @@ public class TurnoController {
         if (!trabajadorService.esTiendaValidaParaRol(trabajador, tienda)) {
             return "RECHAZADO: El cargo '" + cargo + "' no tiene permitido trabajar en la tienda '" + tienda.getNombre() + "'.";
         }
+
+        //Regla 5: Capacidad de la Tienda
+        if (!distribucionService.hayCapacidad(tienda, hoy)) {
+            return "RECHAZADO: La tienda '" + tienda.getNombre() + "' ya alcanzó su capacidad máxima de " + tienda.getCapacidadMaxima() + " trabajadores.";
+        }
+        //Si pasó todas las validaciones, se guarda la distribucion
+        distribucionService.registrarDistribucion(trabajador, tienda, tienda.getTerminal(), hoy);
 
         return "APROBADO: El trabajador puede estar en la tienda " + tienda.getNombre();
     }

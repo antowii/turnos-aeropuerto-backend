@@ -1,6 +1,6 @@
-package com.aeropuerto.turnos.repository;
+package com.aeropuerto.distribucion.repository;
 
-import com.aeropuerto.turnos.model.Trabajador;
+import com.aeropuerto.distribucion.model.Trabajador;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
