@@ -66,6 +66,12 @@ public class DistribucionController {
             // ¡Guardamos al Encargado! (Le pasamos 'null' en la tienda, pero sí le pasamos el terminalDestino)
             distribucionService.registrarDistribucion(trabajador, null, terminalDestino, hoy);
 
+            //Actualizamos la memoria del Encargado
+            trabajador.setUltimoTerminalTrabajado(terminalDestino);
+            //El Encargado no tiene tienda fija
+            trabajador.setUltimaTiendaTrabajada(null);
+            trabajadorService.actualizarTrabajador(trabajador);
+
             return "APROBADO: El Encargado se asignó al terminal " + terminalDestino;
         }
 
@@ -94,12 +100,31 @@ public class DistribucionController {
             return "RECHAZADO: El cargo '" + cargo + "' no tiene permitido trabajar en la tienda '" + tienda.getNombre() + "'.";
         }
 
-        //Regla 5: Capacidad de la Tienda
+        //Regla 5: Prioridad del Capitán en Emprende
+        if (cargo.equalsIgnoreCase("Capitan") && tienda.getTerminal().equalsIgnoreCase("Internacional")) {
+            // Si intentamos mandarlo a una tienda que NO es Emprende (ej. Espigon F o Manquehue)
+            if (!tienda.getNombre().equalsIgnoreCase("Emprende")) {
+                // Solo le exigimos ir a Emprende si el Capitán TIENE credencial TICA.
+                if (trabajador.isTieneTica()) {
+                    boolean emprendeCubierta = distribucionService.tiendaTieneCapitan("Emprende", hoy);
+                    if (!emprendeCubierta) {
+                        return "RECHAZADO: Por regla de prioridad, debes asignar un Capitán a 'Emprende' antes de enviarlo a '" + tienda.getNombre() + "'.";
+                    }
+                }
+            }
+        }
+
+        //Regla 6: Capacidad de la Tienda
         if (!distribucionService.hayCapacidad(tienda, hoy)) {
             return "RECHAZADO: La tienda '" + tienda.getNombre() + "' ya alcanzó su capacidad máxima de " + tienda.getCapacidadMaxima() + " trabajadores.";
         }
         //Si pasó todas las validaciones, se guarda la distribucion
         distribucionService.registrarDistribucion(trabajador, tienda, tienda.getTerminal(), hoy);
+
+        //Actualizamos la memoria del trabajador normal/Capitan
+        trabajador.setUltimoTerminalTrabajado(tienda.getTerminal());
+        trabajador.setUltimaTiendaTrabajada(tienda.getNombre());
+        trabajadorService.actualizarTrabajador(trabajador);
 
         return "APROBADO: El trabajador puede estar en la tienda " + tienda.getNombre();
     }

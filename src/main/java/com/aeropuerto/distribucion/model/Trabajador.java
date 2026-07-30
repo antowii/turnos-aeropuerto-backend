@@ -15,6 +15,7 @@ public class Trabajador {
 
     private String nombreCompleto;
     private String cargo;
-    private boolean tica;
+    private boolean tieneTica;
     private String ultimoTerminalTrabajado;
+    private String ultimaTiendaTrabajada;
 }

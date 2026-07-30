@@ -4,6 +4,7 @@ import com.aeropuerto.distribucion.model.Distribucion;
 import com.aeropuerto.distribucion.model.Tienda;
 import com.aeropuerto.distribucion.model.Trabajador;
 import com.aeropuerto.distribucion.repository.DistribucionRepository;
+import org.springframework.cglib.core.Local;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
@@ -37,5 +38,10 @@ public class DistribucionService {
     public boolean terminalYaTieneEncargado(String terminal, LocalDate fecha) {
         //Busca si ya existe alguien con cargo "Encargado" en ese terminal hoy
         return distribucionRepository.existsByTrabajadorCargoAndTerminalAsignadoAndFecha("Encargado", terminal, fecha);
+    }
+
+    //Metodo 3: Buscar un Capitán
+    public boolean tiendaTieneCapitan(String nombreTienda, LocalDate fecha) {
+        return distribucionRepository.existsByTiendaNombreIgnoreCaseAndTrabajadorCargoIgnoreCaseAndFecha(nombreTienda, "Capitan", fecha);
     }
 }

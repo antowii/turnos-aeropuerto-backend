@@ -29,7 +29,7 @@ public class TrabajadorService {
         if (tienda.isRequiereTica()) {
             // Si la exige, el trabajador debe tenerla para que devuelva 'true'
             // (Nota: Lombok genera 'isTieneTica()' para las variables booleanas)
-            return trabajador.isTica();
+            return trabajador.isTieneTica();
         }
         //Si la tienda no exige TICA, cualquiera puede trabajar ahi
         return true;
@@ -52,7 +52,25 @@ public class TrabajadorService {
 
     //Metodo 3B: Validar rotacion cuando sí tenemos una Tienda (Vendedores normales)
     public boolean cumpleRotacion(Trabajador trabajador, Tienda tiendaNueva) {
-        return cumpleRotacion(trabajador, tiendaNueva.getTerminal());
+        String cargo = trabajador.getCargo();
+        //Excepción: Joyeras y Supervisores no rotan
+        if (cargo != null && (cargo.equalsIgnoreCase("Joyera") || cargo.equalsIgnoreCase("Supervisor"))) {
+            return true;
+        }
+
+        //Validación 1: Rotación de Terminal
+        String terminalAnterior = trabajador.getUltimoTerminalTrabajado();
+        if (terminalAnterior != null && terminalAnterior.equalsIgnoreCase(tiendaNueva.getTerminal())) {
+            return false; //Rechazado por repetir terminal
+        }
+
+        //Validación 2: Rotación de Tienda (Muy útil si por falta de personal deben repetir terminal)
+        String tiendaAnterior = trabajador.getUltimaTiendaTrabajada();
+        if (tiendaAnterior != null && tiendaAnterior.equalsIgnoreCase(tiendaNueva.getNombre())) {
+            return false; //Rechazado por repetir tienda
+        }
+
+        return true;
     }
 
     //Metodo 4: Validar si está disponible (no tiene ausencias hoy)
@@ -90,6 +108,20 @@ public class TrabajadorService {
                     nombreTienda.equalsIgnoreCase("Joyería") ||
                     nombreTienda.equalsIgnoreCase("Emprende");
         }
+
+        if (cargo.equalsIgnoreCase("Capitan")) {
+            nombreTienda = tienda.getNombre().toUpperCase();
+            return nombreTienda.equals("RUMBO MIL") ||
+                    nombreTienda.equals("RUMBO 400") ||
+                    nombreTienda.equals("MANQUEHUE") ||
+                    nombreTienda.equals("EMPRENDE") ||
+                    nombreTienda.equals("ESPIGON F");
+        }
         return true;
+    }
+
+    //Metodo para actualizar los datos del trabajador en la base de datos
+    public Trabajador actualizarTrabajador(Trabajador trabajador) {
+        return trabajadorRepository.save(trabajador);
     }
 }
