@@ -1,16 +1,15 @@
 package com.aeropuerto.distribucion.controller;
 
+import com.aeropuerto.distribucion.model.Distribucion;
 import com.aeropuerto.distribucion.model.Tienda;
 import com.aeropuerto.distribucion.model.Trabajador;
 import com.aeropuerto.distribucion.service.DistribucionService;
 import com.aeropuerto.distribucion.service.TiendaService;
 import com.aeropuerto.distribucion.service.TrabajadorService;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/distribuciones")
@@ -127,5 +126,18 @@ public class DistribucionController {
         trabajadorService.actualizarTrabajador(trabajador);
 
         return "APROBADO: El trabajador puede estar en la tienda " + tienda.getNombre();
+    }
+    //Endpoint para ver la distribucion del día
+    @GetMapping("/hoy")
+    public List<Distribucion> obtenerDistribucionesDeHoy() {
+        LocalDate hoy = LocalDate.now();
+        return distribucionService.obtenerDistribucionesDelDia(hoy);
+    }
+
+    //Endpoint para sacar a un trabajador de su turno
+    @DeleteMapping("/{id}")
+    public String eliminarDistribucion(@PathVariable Long id) {
+        distribucionService.eliminarDistribucion(id);
+        return "EXITO: Distribución eliminada";
     }
 }

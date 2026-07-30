@@ -4,10 +4,10 @@ import com.aeropuerto.distribucion.model.Distribucion;
 import com.aeropuerto.distribucion.model.Tienda;
 import com.aeropuerto.distribucion.model.Trabajador;
 import com.aeropuerto.distribucion.repository.DistribucionRepository;
-import org.springframework.cglib.core.Local;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
+import java.util.List;
 
 @Service
 public class DistribucionService {
@@ -40,8 +40,18 @@ public class DistribucionService {
         return distribucionRepository.existsByTrabajadorCargoAndTerminalAsignadoAndFecha("Encargado", terminal, fecha);
     }
 
-    //Metodo 3: Buscar un Capitán
+    //Metodo 4: Buscar un Capitán
     public boolean tiendaTieneCapitan(String nombreTienda, LocalDate fecha) {
         return distribucionRepository.existsByTiendaNombreIgnoreCaseAndTrabajadorCargoIgnoreCaseAndFecha(nombreTienda, "Capitan", fecha);
+    }
+
+    //Metodo 5: Obtener la lista de trabajadores distribuidos en un día
+    public List<Distribucion> obtenerDistribucionesDelDia(LocalDate fecha) {
+        return distribucionRepository.findByFecha(fecha);
+    }
+
+    //Metodo 6: Eliminar una distribucion (liberar el cupo)
+    public void eliminarDistribucion(Long id) {
+        distribucionRepository.deleteById(id);
     }
 }
